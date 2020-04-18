@@ -38,6 +38,9 @@ func (d deck) print() {
 // takes args of deck and int
 // returns two decks
 func deal(d deck, handSize int) (deck, deck) {
+	// return 2 decks
+	// 0 to handSize (not inclusive)
+	// handSize to end of deck
 	return d[:handSize], d[handSize:]
 }
 
