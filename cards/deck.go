@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
+	"os"
 	"strings"
+	"time"
 )
 
 // Create a new type "deck" which is a slice of strings
@@ -45,4 +48,35 @@ func (d deck) toString() string {
 // https://golang.org/pkg/io/ioutil/#WriteFile
 func (d deck) saveToFile(filename string) error {
 	return ioutil.WriteFile(filename, []byte(d.toString()), 0666)
+}
+
+// no receiver, we don't yet have a deck, but want one
+func newDeckFromFile(filename string) deck {
+	bs, err := ioutil.ReadFile(filename)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1) // 0 means success, anything else means error
+	}
+
+	// string(bs) converts byte slice to string
+	// split the string on "," to return a slice of strings
+	s := strings.Split(string(bs), ",")
+	// use type conversion to convert slice of strings to deck
+	// easily possible because a deck is essentially a slice of strings with
+	// extra functions attached
+	return deck(s)
+}
+
+// not returning anything, just shuffling the receiving deck
+func (d deck) shuffle() {
+	// produce a new "Source" with a different seed based on time stamp
+	source := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(source)
+
+	for i := range d {
+		newPosition := r.Intn(len(d) - 1)
+		// swap elements in deck
+		d[i], d[newPosition] = d[newPosition], d[i]
+	}
 }
